@@ -35,11 +35,12 @@ public class lecturaAcc extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lectura_acc);
+        disconnect = (Button)(findViewById(R.id.button));
+        disconnect.setVisibility(View.GONE);
         spinner = (ProgressBar)findViewById(R.id.progressBar1);
         spinner.setVisibility(View.VISIBLE);
         final Bean beanConnect = (Bean) getIntent().getExtras().get("connect");
         editText = (TextView)(findViewById(R.id.editText));
-        disconnect = (Button)(findViewById(R.id.button));
         final LedColor green = LedColor.create(0, 255, 0);
         final LedColor off = LedColor.create(0, 0, 0);
 
@@ -62,6 +63,7 @@ public class lecturaAcc extends AppCompatActivity {
             public void onSerialMessageReceived(byte[] data) {
                 beanConnect.setLed(off);
                 spinner.setVisibility(View.GONE);
+                disconnect.setVisibility(View.VISIBLE);
                 String s = new String(data);
                 texto = s;
 
