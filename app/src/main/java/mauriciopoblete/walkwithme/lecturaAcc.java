@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,18 +29,18 @@ public class lecturaAcc extends AppCompatActivity {
     String texto = null;
     Button disconnect;
     private StringBuilder sb = new StringBuilder();
-
+    private ProgressBar spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lectura_acc);
+        spinner = (ProgressBar)findViewById(R.id.progressBar1);
+        spinner.setVisibility(View.VISIBLE);
         final Bean beanConnect = (Bean) getIntent().getExtras().get("connect");
         editText = (TextView)(findViewById(R.id.editText));
         disconnect = (Button)(findViewById(R.id.button));
         final LedColor green = LedColor.create(0, 255, 0);
-        final LedColor red = LedColor.create(255, 0, 0);
-        final LedColor blue = LedColor.create(0,0,255);
         final LedColor off = LedColor.create(0, 0, 0);
 
         final BeanListener beanListener = new BeanListener() {
@@ -47,7 +48,7 @@ public class lecturaAcc extends AppCompatActivity {
             @Override
             public void onConnected() {
                 beanConnect.setLed(green);
-            };
+            }
 
             @Override
             public void onConnectionFailed() {
@@ -56,11 +57,11 @@ public class lecturaAcc extends AppCompatActivity {
 
             @Override
             public void onDisconnected() {
-                beanConnect.setLed(red);
             }
             @Override
             public void onSerialMessageReceived(byte[] data) {
                 beanConnect.setLed(off);
+                spinner.setVisibility(View.GONE);
                 String s = new String(data);
                 texto = s;
 
@@ -88,7 +89,6 @@ public class lecturaAcc extends AppCompatActivity {
 
             }
         };
-        assert beanConnect != null;
         beanConnect.connect(this, beanListener);
 
         disconnect.setOnClickListener(new View.OnClickListener(){

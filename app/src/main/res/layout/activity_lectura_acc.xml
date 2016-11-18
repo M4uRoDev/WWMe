@@ -9,6 +9,15 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="mauriciopoblete.walkwithme.lecturaAcc">
 
+    <ProgressBar
+        android:id="@+id/progressBar1"
+        style="?android:attr/progressBarStyleLarge"
+        android:progressTint="@color/colorPrimaryDark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -32,4 +41,7 @@
         android:textSize="90px"
         android:textAlignment="center"
         android:textColor="@android:color/holo_green_light" />
+
+
+
 </RelativeLayout>
