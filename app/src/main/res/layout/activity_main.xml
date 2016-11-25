@@ -12,7 +12,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Conectar Dispositivo WWM"
+        android:text="Conectar Dispositivo WWM..."
         android:id="@+id/botonConnect"
         android:layout_marginTop="50dp"
         android:layout_alignParentTop="true"

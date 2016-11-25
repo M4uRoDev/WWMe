@@ -1,32 +1,24 @@
 package mauriciopoblete.walkwithme;
 
-import android.annotation.TargetApi;
-import android.os.Build;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.content.BroadcastReceiver;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.punchthrough.bean.sdk.Bean;
-import com.punchthrough.bean.sdk.BeanListener;
-import com.punchthrough.bean.sdk.BeanManager;
-import com.punchthrough.bean.sdk.message.Acceleration;
-import com.punchthrough.bean.sdk.message.BeanError;
-import com.punchthrough.bean.sdk.message.Callback;
-import com.punchthrough.bean.sdk.message.DeviceInfo;
-import com.punchthrough.bean.sdk.message.LedColor;
-import com.punchthrough.bean.sdk.message.ScratchBank;
 
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
+public class lecturaAcc extends Activity {
 
-public class lecturaAcc extends AppCompatActivity {
 
     TextView editText;
-    String texto = null;
     Button disconnect;
     private StringBuilder sb = new StringBuilder();
     private ProgressBar spinner;
@@ -36,70 +28,37 @@ public class lecturaAcc extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lectura_acc);
         disconnect = (Button)(findViewById(R.id.button));
-        disconnect.setVisibility(View.GONE);
         spinner = (ProgressBar)findViewById(R.id.progressBar1);
         spinner.setVisibility(View.VISIBLE);
-        final Bean beanConnect = (Bean) getIntent().getExtras().get("connect");
         editText = (TextView)(findViewById(R.id.editText));
-        final LedColor green = LedColor.create(0, 255, 0);
-        final LedColor off = LedColor.create(0, 0, 0);
 
-        final BeanListener beanListener = new BeanListener() {
 
+        final Bean beanConnect = (Bean) getIntent().getExtras().get("connect");
+        final Intent returnLectura = new Intent(this, alertDispatcher.class);
+        returnLectura.putExtra("connect", beanConnect);
+        this.startService(returnLectura);
+
+        BroadcastReceiver broad = new BroadcastReceiver() {
             @Override
-            public void onConnected() {
-                beanConnect.setLed(green);
-            }
-
-            @Override
-            public void onConnectionFailed() {
-
-            }
-
-            @Override
-            public void onDisconnected() {
-            }
-            @Override
-            public void onSerialMessageReceived(byte[] data) {
-                beanConnect.setLed(off);
+            public void onReceive(Context context, Intent intent) {
+                disconnect.setVisibility(View.GONE);
                 spinner.setVisibility(View.GONE);
-                disconnect.setVisibility(View.VISIBLE);
-                String s = new String(data);
-                texto = s;
-
-                sb.append(s);                                                // append string
-                int endOfLineIndex = sb.indexOf("\r\n");                            // determine the end-of-line
-                if (endOfLineIndex > 0) {                                            // if end-of-line,
-                    String sbprint = sb.substring(0, endOfLineIndex);               // extract string
-                    sb.delete(0, sb.length());                                      // and clear
-                    editText.setText(sbprint);
-                }
-            }
-
-            @Override
-            public void onScratchValueChanged(ScratchBank bank, byte[] value) {
-
-            }
-
-            @Override
-            public void onError(BeanError error) {
-
-            }
-
-            @Override
-            public void onReadRemoteRssi(int rssi) {
-
+                String data = intent.getExtras().getString("data");
+                editText.setText(data);
             }
         };
-        beanConnect.connect(this, beanListener);
+        broad.goAsync();
 
-        disconnect.setOnClickListener(new View.OnClickListener(){
+        disconnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                beanConnect.disconnect();
+
+                stopService(new Intent(lecturaAcc.this, alertDispatcher.class));
                 finish();
             }
         });
 
+
     }
+
 }

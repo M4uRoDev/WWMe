@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Walk With Me</string>
+    <string name="ble_not_supported">Error, BLE no compatible.</string>
+    <string name="unknown_device">Servicio desconocido</string>
+    <string name="title_routerDevices">Dispositivos para enlazar</string>
+    <string name="menu_stop">Stop</string>
+    <string name="menu_scan">Scan</string>
+    <string name="reply_label">Asistir</string>
 </resources>

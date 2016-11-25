@@ -14,7 +14,7 @@ import com.punchthrough.bean.sdk.BeanManager;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ListaDispositivos extends ListActivity implements Serializable {
+public class RouterDevicesWWM extends ListActivity implements Serializable {
 
 
     @Override
@@ -30,6 +30,8 @@ public class ListaDispositivos extends ListActivity implements Serializable {
                 String addr = bean.getDevice().getAddress();
                 for(Bean b: beans){
                     if(Dispositivos.getCount() > 0){
+
+
                         Bean ultimoRegistro = Dispositivos.getItem(Dispositivos.getCount()-1);
                         if(ultimoRegistro != b){
                             if(b.getDevice().getAddress().equals(addr)){
@@ -51,7 +53,7 @@ public class ListaDispositivos extends ListActivity implements Serializable {
 
             }
         };
-        BeanManager.getInstance().setScanTimeout(20);  // Timeout in seconds, optional, default is 30 seconds
+        BeanManager.getInstance().setScanTimeout(10);  // Timeout in seconds, optional, default is 30 seconds
         BeanManager.getInstance().startDiscovery(listener);
     }
 
