@@ -17,34 +17,21 @@ public class lecturaAcc extends Activity {
 
     TextView editText;
     Button disconnect;
-    private StringBuilder sb = new StringBuilder();
-    private ProgressBar spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lectura_acc);
         disconnect = (Button)(findViewById(R.id.button));
-        spinner = (ProgressBar)findViewById(R.id.progressBar1);
-        spinner.setVisibility(View.VISIBLE);
         editText = (TextView)(findViewById(R.id.editText));
 
 
         final Bean beanConnect = (Bean) getIntent().getExtras().get("connect");
+        final String idAdultoMayor = getIntent().getExtras().getString("idAdultoMayor");
         final Intent returnLectura = new Intent(this, alertDispatcher.class);
         returnLectura.putExtra("connect", beanConnect);
+        returnLectura.putExtra("idAdultoMayor", idAdultoMayor);
         this.startService(returnLectura);
-
-        BroadcastReceiver broad = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                disconnect.setVisibility(View.GONE);
-                spinner.setVisibility(View.GONE);
-                String data = intent.getExtras().getString("data");
-                editText.setText(data);
-            }
-        };
-        broad.goAsync();
 
         disconnect.setOnClickListener(new View.OnClickListener() {
             @Override

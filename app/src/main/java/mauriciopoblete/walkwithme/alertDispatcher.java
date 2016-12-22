@@ -11,17 +11,27 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.punchthrough.bean.sdk.Bean;
 import com.punchthrough.bean.sdk.BeanListener;
 import com.punchthrough.bean.sdk.message.BeanError;
 import com.punchthrough.bean.sdk.message.LedColor;
 import com.punchthrough.bean.sdk.message.ScratchBank;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by M4uRo on 27-11-16.
  */
 public class alertDispatcher extends Service{
-    public static final int notification_id = 1;
 
     String texto = null;
     private StringBuilder sb = new StringBuilder();
@@ -32,12 +42,14 @@ public class alertDispatcher extends Service{
     }
     @Override
     public void onCreate() {
-        Toast.makeText(getApplicationContext(), "Intentando Conexión...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Preparando Conexión...", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(getApplicationContext(), "Construyendo tuneles para la conexión...", Toast.LENGTH_SHORT).show();
+        final String funcion = "addAlerta";
+        final String idAdultoMayor = intent.getExtras().getString("idAdultoMayor");
+        Toast.makeText(getApplicationContext(), "Intentado conexión...", Toast.LENGTH_SHORT).show();
         final Bean beanConnect = (Bean) intent.getExtras().get("connect");
         final LedColor green = LedColor.create(0, 255, 0);
         final LedColor blue = LedColor.create(0,0,255);
@@ -48,7 +60,7 @@ public class alertDispatcher extends Service{
 
             @Override
             public void onConnected() {
-                Toast.makeText(getApplicationContext(), "Conectando...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Enlanzado con dispositivo...", Toast.LENGTH_SHORT).show();
                 beanConnect.setLed(green);
             }
 
@@ -65,7 +77,7 @@ public class alertDispatcher extends Service{
             }
             @Override
             public void onSerialMessageReceived(byte[] data) {
-                beanConnect.setLed(blue);
+                beanConnect.setLed(off);
                 String s = new String(data);
                 texto = s;
 
@@ -74,7 +86,6 @@ public class alertDispatcher extends Service{
                 if (endOfLineIndex > 0) {                                            // if end-of-line,
                     String sbprint = sb.substring(0, endOfLineIndex);               // extract string
                     sb.delete(0, sb.length());                                      // and clear
-                    //oast.makeText(getApplicationContext(),"En estos momentos: "+ sbprint,Toast.LENGTH_LONG).show();
                     if(sbprint.equals("CAIDA")) {
                         for(int i=1;i<10;i++) {
                             beanConnect.setLed(red);
@@ -83,34 +94,37 @@ public class alertDispatcher extends Service{
                             beanConnect.setLed(blue);
                             beanConnect.setLed(red);
                         }
-                        //Construcción intent implicito para notificacion
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.icinfvm.cl"));
-                        PendingIntent pendingIntent = PendingIntent.getActivity(alertDispatcher.this, 0, intent, 0);
+                        beanConnect.setLed(off);
 
-                        //Construcción notificación
-                        NotificationCompat.Builder builder = new NotificationCompat.Builder(alertDispatcher.this);
-                        builder.setSmallIcon(R.mipmap.ic_launcher);
-                        builder.setContentIntent(pendingIntent);
-                        builder.setAutoCancel(true);
-                        builder.setVibrate(new long[] {1000, 1000, 1000, 1000, 1000});
-                        builder.setTicker("Alerta de caída! - WalkWithMe");
-                        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
-                        builder.setContentTitle("Alerta de caída!");
-                        builder.setContentText("Se ha detectado una caída!");
-                        builder.setSubText("Toque para ver más información WWM.");
-
-                        //Enviando notificación
-                        NotificationManager notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-                        notificationManager.notify(notification_id,builder.build());
-
+                        StringRequest stringRequest = new StringRequest(Request.Method.POST,
+                                Constants.FUNCIONES_URL,
+                                new Response.Listener<String>() {
+                                    @Override
+                                    public void onResponse(String response) {
+                                        try{
+                                            JSONObject jsonObject = new JSONObject(response);
+                                            Toast.makeText(getApplicationContext(), jsonObject.getString("message"), Toast.LENGTH_LONG).show();
+                                        }catch (JSONException e){
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                },
+                                new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                                    }
+                                }){
+                            @Override
+                            protected Map<String, String> getParams() throws AuthFailureError {
+                                Map<String, String> params = new HashMap<>();
+                                params.put("funcion",funcion);
+                                params.put("idAM",idAdultoMayor);
+                                return params;
+                            }
+                        };
+                        RequestHandler.getInstance(alertDispatcher.this).addToRequestQueue(stringRequest);
                     }
-
-                    /*
-                    Intent send = new Intent(getApplicationContext(), lecturaAcc.class);
-                    send.putExtra("data", sbprint);
-                    send.setAction("broadcastReceiver");
-                    sendBroadcast(send);
-                    //PendingIntent pendingIntent = PendingIntent.getActivity(alertDispatcher.this,0,send,0);*/
                 }
 
             }

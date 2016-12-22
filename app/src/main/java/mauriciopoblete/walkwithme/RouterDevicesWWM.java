@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.punchthrough.bean.sdk.Bean;
 import com.punchthrough.bean.sdk.BeanDiscoveryListener;
@@ -60,9 +61,11 @@ public class RouterDevicesWWM extends ListActivity implements Serializable {
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-
+        Intent intent = getIntent();
+        String idRedApoyo = intent.getExtras().getString("idAdultoMayor");
         final Intent returnLectura = new Intent(this, lecturaAcc.class);
         returnLectura.putExtra("connect", (Bean) l.getAdapter().getItem(position));
+        returnLectura.putExtra("idAdultoMayor",idRedApoyo);
         startActivity(returnLectura);
         finish();
 

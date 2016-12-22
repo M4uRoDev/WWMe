@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-feature
         android:name="android.hardware.BLUETOOTH_LE"
@@ -18,33 +18,38 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity" />
+        <activity
+            android:name=".RouterDevicesWWM"
+            android:label="Dispositivos Encontrados:"
+            android:theme="@android:style/Theme.Dialog" />
+        <activity
+            android:name=".ElderlySelector"
+            android:label="Mis adultos mayores:"
+            android:theme="@android:style/Theme.Dialog" />
+        <activity android:name=".lecturaAcc" />
+
+        <service
+            android:name=".alertDispatcher"
+            android:enabled="true"
+            android:exported="true"
+            android:label="@string/app_name" />
+
+        <service android:name=".alertReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:label="Alert Receiver"/>
+
+        <activity android:name=".Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".RouterDevicesWWM"
-            android:label="Dispositivos Encontrados:"
-            android:theme="@android:style/Theme.Dialog" />
-        <activity android:name=".lecturaAcc" />
-
-        <service android:name=".alertDispatcher"
-            android:label="@string/app_name"
-            android:enabled="true"
-            android:exported="true"
-            />
-        <receiver android:name=".lecturaAcc$broadcastReceiver">
-            <intent-filter>
-                <action android:name="dataWWMdevice">
-
-                </action>
-            </intent-filter>
-
-        </receiver>
-
+        <activity android:name=".RegisterSupportNet" />
+        <activity android:name=".SupportNetMenu" />
+        <activity android:name=".RegisterElderly" />
     </application>
 
 </manifest>
